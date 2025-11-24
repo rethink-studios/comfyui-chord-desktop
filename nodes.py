@@ -76,10 +76,10 @@ class ChordMaterialEstimation(io.ComfyNode):
                 io.Image.Input("image",),
             ],
             outputs=[
-                io.Image.Output("basecolor", display_name="basecolor"),
-                io.Image.Output("normal", display_name="normal"),
-                io.Image.Output("roughness", display_name="roughness"),
-                io.Image.Output("metalness", display_name="metalness"),
+                io.Image.Output(display_name="basecolor"),
+                io.Image.Output(display_name="normal"),
+                io.Image.Output(display_name="roughness"),
+                io.Image.Output(display_name="metalness"),
             ]
         )
     
@@ -112,7 +112,7 @@ class ChordNormalToHeight(io.ComfyNode):
                 io.Image.Input("normal"),
             ],
             outputs=[
-                io.Image.Output("height", display_name="height"), 
+                io.Image.Output(display_name="height"), 
             ],
         )
     
