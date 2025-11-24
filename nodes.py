@@ -76,10 +76,10 @@ class ChordMaterialEstimation(io.ComfyNode):
                 io.Image.Input("image",),
             ],
             outputs=[
-                io.Image.Output("basecolor",),
-                io.Image.Output("normal",),
-                io.Image.Output("roughness",),
-                io.Image.Output("metalness",),
+                io.Image.Output("basecolor", display_name="basecolor"),
+                io.Image.Output("normal", display_name="normal"),
+                io.Image.Output("roughness", display_name="roughness"),
+                io.Image.Output("metalness", display_name="metalness"),
             ]
         )
     
@@ -109,10 +109,10 @@ class ChordNormalToHeight(io.ComfyNode):
             category="Chord",
             description="A node to convert normal map to height map using Poisson solver with overlapping subregions.",
             inputs=[
-                io.Image.Input("normal",),
+                io.Image.Input("normal"),
             ],
             outputs=[
-                io.Image.Output("height",), 
+                io.Image.Output("height", display_name="height"), 
             ],
         )
     
