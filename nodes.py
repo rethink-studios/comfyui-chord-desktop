@@ -6,7 +6,10 @@ from .normal_to_height import normal_to_height
 
 # Modules from ComfyUI
 import folder_paths
+import comfy.model_management
 from comfy_api.latest import io
+from comfy.utils import load_torch_file
+from comfy.model_patcher import ModelPatcher
 
 # Modules from ComfyUI-Chord
 from chord import ChordModel
@@ -22,6 +25,8 @@ def apply_circular_padding(model):
     else:
         apply_padding(model, 'circular')
 
+ChordModelType = io.Custom("CHORD_MODEL")
+
 class ChordLoadModel(io.ComfyNode):
     """Node to load Chord Model"""
 
@@ -35,28 +40,29 @@ class ChordLoadModel(io.ComfyNode):
             inputs=[
                 io.Combo.Input(
                     "ckpt_name",
-                    options=[x for x in folder_paths.get_filename_list("checkpoints") if x.endswith("ckpt")]
+                    options=[x for x in folder_paths.get_filename_list("checkpoints")]
                 ),
             ],
-            outputs=[io.Model.Output("model")],
+            outputs=[ChordModelType.Output()],
         )
     
     @classmethod
     def execute(cls, ckpt_name) -> io.NodeOutput:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
         if type(ckpt_name) is list:
             ckpt_name = ckpt_name[0]
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         config = OmegaConf.load(os.path.join(os.path.dirname(__file__), "chord/config/chord.yaml"))
         model = ChordModel(config)
-        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        sd = load_torch_file(ckpt_path, safe_load=True)
         try:
-            model.load_state_dict(ckpt["state_dict"])
+            model.load_state_dict(sd)
         except RuntimeError as e:
             raise RuntimeError('Failed to load model, check if the checkpoint file is correct.\n{}'.format(repr(e)))
-        model.to(device)
         model.eval()
-        return io.NodeOutput(model)
+        model_patcher = ModelPatcher(model,
+                                     comfy.model_management.get_torch_device(),
+                                     comfy.model_management.unet_offload_device())
+        return io.NodeOutput(model_patcher)
 
 class ChordMaterialEstimation(io.ComfyNode):
     """Chord Material Estimation Node"""
@@ -69,8 +75,8 @@ class ChordMaterialEstimation(io.ComfyNode):
             category="Chord",
             description="A node to estimate material maps from a texture image using the Chord model.",
             inputs=[
-                io.Model.Input(
-                    "model",
+                ChordModelType.Input(
+                    "chord_model",
                     tooltip="The Chord model used to estimate material."
                 ),
                 io.Image.Input("image",),
@@ -84,7 +90,9 @@ class ChordMaterialEstimation(io.ComfyNode):
         )
     
     @classmethod
-    def execute(cls, model, image) -> io.NodeOutput:
+    def execute(cls, chord_model: ModelPatcher, image) -> io.NodeOutput:
+        comfy.model_management.load_models_gpu([chord_model])
+        model = chord_model.model
         device = next(model.parameters()).device
         apply_circular_padding(model)
         image = image.permute(0,3,1,2).to(device)
