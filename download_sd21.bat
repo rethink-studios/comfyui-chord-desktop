@@ -1,13 +1,7 @@
 @echo off
 REM ===================================================================
 REM  Stable Diffusion 2.1 Downloader for ComfyUI-Chord Desktop Edition
-REM ===================================================================
-REM
-REM This script downloads Stable Diffusion 2.1 Base model from HuggingFace
-REM Required for ComfyUI-Chord to function in ComfyUI Desktop
-REM
-REM Model: RedbeardNZ/stable-diffusion-2-1-base
-REM Cache Location: %USERPROFILE%\.cache\huggingface\hub\
+REM  With Progress Bars
 REM ===================================================================
 
 setlocal enabledelayedexpansion
@@ -72,7 +66,14 @@ if errorlevel 1 (
 )
 echo.
 
-REM Download the model
+REM Check for tqdm (progress bars)
+python -c "import tqdm" >nul 2>&1
+if errorlevel 1 (
+    echo [INFO] Installing tqdm for progress bars...
+    python -m pip install tqdm --quiet >nul 2>&1
+)
+
+REM Download the model with progress
 echo ===================================================================
 echo  Starting Download
 echo ===================================================================
@@ -80,24 +81,13 @@ echo.
 echo Repository: %REPO_ID%
 echo Destination: %CACHE_DIR%
 echo.
-echo This may take 5-15 minutes depending on your connection (~5GB)
+echo Download size: ~5GB
+echo Estimated time: 5-15 minutes
 echo.
-REM Check if Python script with progress bars exists
-if exist "%~dp0download_sd21_progress.py" (
-    echo Using downloader with progress bars...
-    echo.
-    python "%~dp0download_sd21_progress.py"
-    goto :download_done
-)
-
-REM Fallback: inline download (no progress bars)
-echo Downloading... (no progress bars available)
-echo This may take several minutes, please wait...
+echo Progress bars will appear below...
 echo.
 
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='%REPO_ID%', repo_type='model', local_dir_use_symlinks=False, resume_download=True)"
-
-:download_done
+python -c "from huggingface_hub import snapshot_download; from tqdm import tqdm; snapshot_download(repo_id='%REPO_ID%', repo_type='model', local_dir_use_symlinks=False, resume_download=True, tqdm_class=tqdm)"
 
 if errorlevel 1 (
     echo.
@@ -114,7 +104,7 @@ if errorlevel 1 (
     echo Try:
     echo 1. Check your internet connection
     echo 2. Visit the model page and accept terms
-    echo 3. Run this script again
+    echo 3. Run this script again (downloads resume automatically)
     echo.
     pause
     exit /b 1
@@ -135,4 +125,3 @@ echo 1. Restart ComfyUI Desktop if it's running
 echo 2. Use the Chord nodes in your workflows
 echo.
 pause
-
