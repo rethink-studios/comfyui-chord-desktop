@@ -82,10 +82,22 @@ echo Destination: %CACHE_DIR%
 echo.
 echo This may take 5-15 minutes depending on your connection (~5GB)
 echo.
-echo Downloading...
+REM Check if Python script with progress bars exists
+if exist "%~dp0download_sd21_progress.py" (
+    echo Using downloader with progress bars...
+    echo.
+    python "%~dp0download_sd21_progress.py"
+    goto :download_done
+)
+
+REM Fallback: inline download (no progress bars)
+echo Downloading... (no progress bars available)
+echo This may take several minutes, please wait...
 echo.
 
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='%REPO_ID%', repo_type='model', local_dir_use_symlinks=False)"
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='%REPO_ID%', repo_type='model', local_dir_use_symlinks=False, resume_download=True)"
+
+:download_done
 
 if errorlevel 1 (
     echo.
