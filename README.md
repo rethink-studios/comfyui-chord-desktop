@@ -62,6 +62,72 @@ pip install -r .\ComfyUI-Chord\requirements.txt
 
 > **Desktop Users**: See [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) for Stable Diffusion 2.1 caching instructions.
 
+## Differences from Original Version
+
+### What Changed in Desktop Edition
+
+This Desktop Edition includes several modifications to ensure compatibility with ComfyUI Desktop's Electron environment:
+
+#### 1. **Import Path Fixes**
+- **Original**: Used absolute imports (`from chord.module import ...`)
+- **Desktop Edition**: Changed to relative imports (`from .module import ...`)
+- **Why**: ComfyUI Desktop has different Python path handling; relative imports ensure the chord package can always find its internal modules
+- **Files modified**: 
+  - `chord/chord/__init__.py`
+  - `chord/chord/module/chord.py`
+  - `chord/chord/module/stable_diffusion.py`
+
+#### 2. **Enhanced Node Loading**
+- **Original**: Simple module import in `__init__.py`
+- **Desktop Edition**: Uses `importlib` with explicit path resolution and comprehensive error logging
+- **Why**: More reliable module loading across different ComfyUI environments
+- **Features added**:
+  - Debug logging with `[ComfyUI-Chord]` prefix
+  - Detailed error messages with traceback
+  - Path verification before import
+  - Better error isolation
+
+#### 3. **Path Setup Priority**
+- **Original**: Used `sys.path.append()`
+- **Desktop Edition**: Uses `sys.path.insert(0, ...)` 
+- **Why**: Ensures chord directory is checked first, preventing conflicts with other packages
+
+#### 4. **Local-Only Model Loading**
+- **Original**: May attempt HuggingFace API calls for Stable Diffusion 2.1
+- **Desktop Edition**: Set `local_files_only=True` by default in `stable_diffusion.py`
+- **Why**: ComfyUI Desktop may block network requests; all models must be pre-cached locally
+- **Requirement**: Users must pre-cache Stable Diffusion 2.1 (see [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md))
+
+#### 5. **Documentation**
+- Added Desktop-specific setup guides:
+  - `README_DESKTOP.md` - Comprehensive Desktop Edition guide
+  - `COMFYUI_DESKTOP_SETUP.md` - Model caching instructions
+  - `FIXES_FOR_COMFYUI_DESKTOP.md` - Technical details of changes
+  - `API_CALLS_ISSUE.md` - HuggingFace API handling
+- Added `UPDATE.bat` for easy Windows updates
+- Added `CHANGELOG.md` for version tracking
+
+#### 6. **Installation Differences**
+- **Original**: Install to `ComfyUI/custom_nodes/`
+- **Desktop Edition**: Install to `C:\ComfyUIData\custom_nodes\`
+- **Original**: Uses portable Python or system Python
+- **Desktop Edition**: Uses `C:\ComfyUIData\.venv\Scripts\python.exe`
+
+### What Stayed the Same
+
+- ✅ All core functionality is identical
+- ✅ Same model files (chord_v1.safetensors)
+- ✅ Same node interfaces and behavior
+- ✅ Same output quality and capabilities
+- ✅ Same license (Ubisoft Machine Learning License)
+- ✅ Same dependencies (omegaconf, diffusers, imageio, etc.)
+
+### Should You Use Desktop Edition?
+
+- **Use Desktop Edition** if you're running ComfyUI Desktop (Electron app)
+- **Use Original** if you're running standard ComfyUI Portable/Python
+- **Both work** but Desktop Edition has specific fixes for the Desktop environment
+
 ## Example Workflow
 
 You can load this workflow using the JSON file `example_workflows/chord_image_to_material.json` or by dropping the image in ComfyUI.
