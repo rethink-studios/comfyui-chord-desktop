@@ -1,52 +1,57 @@
 # ComfyUI Desktop Setup Guide
 
-## Changes Made for Desktop Compatibility
+## Quick Setup (Recommended)
+
+**Use the automated downloader:**
+
+1. Navigate to the ComfyUI-Chord folder
+2. Double-click `download_sd21.bat`
+3. Wait for download to complete (~5GB, shows progress bars)
+4. Restart ComfyUI Desktop
+
+**That's it!** The script handles everything automatically.
+
+---
+
+## What the Desktop Edition Does
 
 ### 1. Fixed Import Paths
 - Changed absolute imports to relative imports within the chord package
 - Improved path setup to work with ComfyUI Desktop's different path handling
 
-### 2. Disabled API Calls (Option 1 Implementation)
+### 2. Disabled API Calls
 - Set `local_files_only = True` by default in `stable_diffusion.py`
 - Prevents Hugging Face API calls that may be blocked in ComfyUI Desktop
 - All model loading now uses local cache only
 
-## Prerequisites
+### 3. Automated Download Script
+- `download_sd21.bat` downloads Stable Diffusion 2.1 automatically
+- Progress bars show download status
+- Handles all caching and setup
 
-Before using Chord nodes in ComfyUI Desktop, you need to have Stable Diffusion 2.1 cached locally.
+---
 
-### Option 1: Pre-cache via ComfyUI Portable (Easiest)
+## Manual Setup (Advanced Users Only)
+
+If you prefer manual installation or the automated script doesn't work:
+
+### Option 1: Use Hugging Face CLI
+
+```bash
+# Install huggingface_hub
+pip install huggingface_hub
+
+# Download the model
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='RedbeardNZ/stable-diffusion-2-1-base', repo_type='model')"
+```
+
+### Option 2: Pre-cache via ComfyUI Portable
 
 1. Install and run ComfyUI Portable
 2. Load any workflow that uses Stable Diffusion 2.1
 3. ComfyUI Portable will automatically download and cache the model
-4. The cache will be located at: `C:\Users\[your-username]\.cache\huggingface\hub\models--RedbeardNZ--stable-diffusion-2-1-base`
+4. Cache location: `C:\Users\[your-username]\.cache\huggingface\hub\models--RedbeardNZ--stable-diffusion-2-1-base`
 5. This cache is shared between Portable and Desktop versions
-
-### Option 2: Manual Download
-
-1. Visit: https://huggingface.co/RedbeardNZ/stable-diffusion-2-1-base
-2. Accept the license terms
-3. Download all required files:
-   - `unet/config.json` and weights
-   - `vae/config.json` and weights  
-   - `text_encoder/config.json` and weights
-   - `tokenizer/vocab.json`, `merges.txt`, `tokenizer_config.json`
-   - `scheduler/scheduler_config.json`
-4. Place them in: `C:\Users\[your-username]\.cache\huggingface\hub\models--RedbeardNZ--stable-diffusion-2-1-base`
-
-### Option 3: Use Hugging Face CLI
-
-```bash
-# Install huggingface-cli if needed
-pip install huggingface_hub
-
-# Login (required for gated models)
-huggingface-cli login
-
-# Download the model
-huggingface-cli download RedbeardNZ/stable-diffusion-2-1-base --local-dir C:\Users\[your-username]\.cache\huggingface\hub\models--RedbeardNZ--stable-diffusion-2-1-base
-```
 
 ## Verification
 
