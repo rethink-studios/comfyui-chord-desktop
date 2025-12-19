@@ -52,7 +52,17 @@ This fork adds **ComfyUI Desktop compatibility** with the following enhancements
    - Download **chord_v1.safetensors** from [Hugging Face](https://huggingface.co/Ubisoft/ubisoft-laforge-chord)
    - Place it in: `C:\ComfyUIData\models\checkpoints\`
 
-5. **Important**: Pre-cache Stable Diffusion 2.1 (see [Desktop Setup Guide](COMFYUI_DESKTOP_SETUP.md))
+5. **Download Stable Diffusion 2.1** (required):
+   
+   **Option A: Automated (Recommended)**
+   ```bash
+   # Double-click this file in the ComfyUI-Chord folder
+   download_sd21.bat
+   ```
+   The script will automatically download and cache Stable Diffusion 2.1 (~5GB).
+   
+   **Option B: Manual**
+   See [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) for manual installation options.
 
 6. Restart ComfyUI Desktop
 

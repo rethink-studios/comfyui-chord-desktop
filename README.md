@@ -19,6 +19,7 @@ ComfyUI custom node for the paper: **Chord: Chain of Rendering Decomposition for
 - 🔍 **Enhanced Logging**: Better debugging support with detailed error messages
 - 📝 **Desktop Setup Guide**: Comprehensive documentation for Desktop users
 - 🔄 **Update Script**: Easy Windows update script (`UPDATE.bat`)
+- ⬇️ **Auto-Download Script**: One-click Stable Diffusion 2.1 downloader (`download_sd21.bat`)
 
 > **Note**: For detailed Desktop Edition information, see [README_DESKTOP.md](README_DESKTOP.md)
 
@@ -31,9 +32,19 @@ See [README_DESKTOP.md](README_DESKTOP.md) for detailed Desktop Edition installa
 **Quick Start:**
 ```bash
 cd C:\ComfyUIData\custom_nodes
-git clone --recursive https://github.com/[YOUR-USERNAME]/comfyui-chord-desktop.git ComfyUI-Chord
+git clone https://github.com/rethink-studios/comfyui-chord-desktop.git ComfyUI-Chord
 C:\ComfyUIData\.venv\Scripts\python.exe -m pip install -r ComfyUI-Chord\requirements.txt
 ```
+
+**Download Stable Diffusion 2.1 (Required):**
+
+ComfyUI-Chord requires Stable Diffusion 2.1 to be cached locally. Use our automated downloader:
+
+1. Double-click `download_sd21.bat` in the ComfyUI-Chord folder
+2. Wait for download to complete (~5GB, 5-15 minutes)
+3. Restart ComfyUI Desktop
+
+Or see [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) for manual installation options.
 
 ### For Standard ComfyUI
 
