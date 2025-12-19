@@ -12,22 +12,25 @@ A ComfyUI Desktop-compatible fork that works seamlessly in ComfyUI Desktop's Ele
 
 ComfyUI custom node for the paper: **Chord: Chain of Rendering Decomposition for PBR Material Estimation from Generated Texture Images**
 
-## 🆕 Desktop Edition Features
+---
 
+## 🆕 What's New in Desktop Edition
+
+The original Chord implementation didn't work with ComfyUI Desktop, so we built a Desktop-compatible version!
+
+**Desktop Edition Features:**
 - ✅ **Desktop App Support**: Works seamlessly in ComfyUI Desktop's Electron environment
 - 🔧 **Fixed Import Paths**: Resolved path resolution issues specific to ComfyUI Desktop
 - 🔍 **Enhanced Logging**: Better debugging support with detailed error messages
-- 📝 **Desktop Setup Guide**: Comprehensive documentation for Desktop users
-- 🔄 **Update Script**: Easy Windows update script (`UPDATE.bat`)
 - ⬇️ **Auto-Download Script**: One-click Stable Diffusion 2.1 downloader (`download_sd21.bat`)
+- 🔄 **Update Script**: Easy Windows update script (`UPDATE.bat`)
+- 📝 **Desktop Setup Guide**: Comprehensive documentation for Desktop users
 
-> **Note**: For detailed Desktop Edition information, see [README_DESKTOP.md](README_DESKTOP.md)
+---
 
 ## Installation
 
 ### For ComfyUI Desktop (Recommended)
-
-See [README_DESKTOP.md](README_DESKTOP.md) for detailed Desktop Edition installation instructions.
 
 **Quick Start:**
 ```bash
@@ -40,44 +43,67 @@ C:\ComfyUIData\.venv\Scripts\python.exe -m pip install -r ComfyUI-Chord\requirem
 
 ComfyUI-Chord requires Stable Diffusion 2.1 to be cached locally. Use our automated downloader:
 
-1. Double-click `download_sd21.bat` in the ComfyUI-Chord folder
-2. Wait for download to complete (~5GB, 5-15 minutes)
-3. Restart ComfyUI Desktop
+1. Navigate to `C:\ComfyUIData\custom_nodes\ComfyUI-Chord`
+2. Double-click `download_sd21.bat`
+3. Wait for download to complete (~5GB, shows progress bars)
+4. Restart ComfyUI Desktop
 
-Or see [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) for manual installation options.
+**That's it!** You're ready to use Chord nodes.
 
 ### For Standard ComfyUI
 
-1. Download and install ComfyUI. If you are new to ComfyUI, refer to the original [repository](https://github.com/comfyanonymous/ComfyUI) to get started. **Make sure you have the latest version.**
+1. Download and install ComfyUI from the [original repository](https://github.com/comfyanonymous/ComfyUI)
 
-2. Download the pretrained model **chord_v1.safetensors** from [Hugging Face](https://huggingface.co/Ubisoft/ubisoft-laforge-chord) and place it in the folder **./ComfyUI/models/checkpoints**.
-
-3. Install the custom nodes by manually cloning this repository in the custom nodes folder, **with the argument `--recursive`**:
-
-> Note the ComfyUI-Manager does not support cloning with `--recursive` dependencies. The nodes have to be cloned manually for the moment.
-
-```shell
-# Clone the repository
+2. Clone this repository:
+```bash
 cd ./ComfyUI/custom_nodes
-git clone --recursive https://github.com/rethink-studios/comfyui-chord-desktop.git ComfyUI-Chord
-
-# Install dependencies
-## For Python version
-pip install -r .\ComfyUI-Chord\requirements.txt
-
-## Or for Windows portable version
-..\..\python_embeded\python.exe -s -m pip install -r .\ComfyUI-Chord\requirements.txt
+git clone https://github.com/rethink-studios/comfyui-chord-desktop.git ComfyUI-Chord
 ```
 
-4. When running the nodes for the first time, they will download the model **Stable Diffusion 2.1** from this repository on the Hugging Face hub: [RedbeardNZ/stable-diffusion-2-1-base](https://huggingface.co/RedbeardNZ/stable-diffusion-2-1-base). The download will be placed in the Hugging Face cache folder `C:\Users\[your-username]\.cache\huggingface\hub\models--RedbeardNZ--stable-diffusion-2-1-base`. We are working on simplifying this dependency to have all models centralized in the ComfyUI models folder.
+3. Install dependencies:
+```bash
+# For Python version
+pip install -r ComfyUI-Chord/requirements.txt
 
-> **Desktop Users**: See [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) for Stable Diffusion 2.1 caching instructions.
+# Or for Windows portable version
+..\..\python_embeded\python.exe -s -m pip install ComfyUI-Chord\requirements.txt
+```
+
+4. Download **chord_v1.safetensors** from [Hugging Face](https://huggingface.co/Ubisoft/ubisoft-laforge-chord) and place in `./ComfyUI/models/checkpoints`
+
+5. Download Stable Diffusion 2.1 - it will be cached automatically on first run
+
+### Updating to Latest Version
+
+**Windows (Quick):**
+```bash
+# Double-click this file in the ComfyUI-Chord folder
+UPDATE.bat
+```
+
+**Manual:**
+```bash
+cd C:\ComfyUIData\custom_nodes\ComfyUI-Chord
+git pull origin main
+```
+
+---
+
+## Available Nodes
+
+This Desktop Edition provides three custom nodes:
+
+1. **Chord - Load Model**: Load the Chord model checkpoint
+2. **Chord - Material Estimation**: Estimate PBR materials from texture images
+3. **Chord - Normal to Height**: Convert normal maps to height maps
+
+---
 
 ## Differences from Original Version
 
 ### What Changed in Desktop Edition
 
-This Desktop Edition includes several modifications to ensure compatibility with ComfyUI Desktop's Electron environment:
+This Desktop Edition includes modifications to ensure compatibility with ComfyUI Desktop's Electron environment:
 
 #### 1. **Import Path Fixes**
 - **Original**: Used absolute imports (`from chord.module import ...`)
@@ -107,16 +133,12 @@ This Desktop Edition includes several modifications to ensure compatibility with
 - **Original**: May attempt HuggingFace API calls for Stable Diffusion 2.1
 - **Desktop Edition**: Set `local_files_only=True` by default in `stable_diffusion.py`
 - **Why**: ComfyUI Desktop may block network requests; all models must be pre-cached locally
-- **Requirement**: Users must pre-cache Stable Diffusion 2.1 (see [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md))
+- **Solution**: Users run `download_sd21.bat` to pre-cache SD 2.1
 
-#### 5. **Documentation**
-- Added Desktop-specific setup guides:
-  - `README_DESKTOP.md` - Comprehensive Desktop Edition guide
-  - `COMFYUI_DESKTOP_SETUP.md` - Model caching instructions
-  - `FIXES_FOR_COMFYUI_DESKTOP.md` - Technical details of changes
-  - `API_CALLS_ISSUE.md` - HuggingFace API handling
-- Added `UPDATE.bat` for easy Windows updates
-- Added `CHANGELOG.md` for version tracking
+#### 5. **Automated Setup**
+- **Added**: `download_sd21.bat` - One-click SD 2.1 downloader with progress bars
+- **Added**: `UPDATE.bat` - Easy update script for Windows
+- **Added**: Comprehensive Desktop-specific documentation
 
 #### 6. **Installation Differences**
 - **Original**: Install to `ComfyUI/custom_nodes/`
@@ -139,19 +161,61 @@ This Desktop Edition includes several modifications to ensure compatibility with
 - **Use Original** if you're running standard ComfyUI Portable/Python
 - **Both work** but Desktop Edition has specific fixes for the Desktop environment
 
+---
+
 ## Example Workflow
 
 You can load this workflow using the JSON file `example_workflows/chord_image_to_material.json` or by dropping the image in ComfyUI.
 
 ![Example workflow](chord_image_to_material.png)
 
+---
+
+## Troubleshooting
+
+### Nodes Show "X" Icons
+
+1. Check ComfyUI Desktop console/logs for error messages (look for `[ComfyUI-Chord]`)
+2. Verify `chord_v1.safetensors` is in your checkpoints folder
+3. Ensure Stable Diffusion 2.1 is cached - run `download_sd21.bat` if not
+4. Check that all dependencies are installed
+
+### Import Errors
+
+If you see import errors:
+1. Check the console logs for detailed error messages
+2. Verify all dependencies are installed: `pip install -r requirements.txt`
+
+### Stable Diffusion Loading Issues
+
+- Ensure Stable Diffusion 2.1 is cached before using Chord nodes
+- Run `download_sd21.bat` to download automatically
+- Check logs for "Loading Stable Diffusion 2.1 from local cache" messages
+
+For more troubleshooting help, see [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md)
+
+---
+
+## Documentation
+
+- [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md) - Manual setup options
+- [FIXES_FOR_COMFYUI_DESKTOP.md](FIXES_FOR_COMFYUI_DESKTOP.md) - Technical details of changes
+- [API_CALLS_ISSUE.md](API_CALLS_ISSUE.md) - HuggingFace API handling
+- [CHANGELOG.md](CHANGELOG.md) - Version history
+
+---
+
 ## License
 
 This project is released under the **Ubisoft Machine Learning License (Research-Only - Copyleft)**. See the full terms in the [LICENSE](LICENSE) file.
 
+**Important**: This Desktop Edition maintains the same license as the original work. All modifications are clearly marked, and attribution to Ubisoft is retained.
+
+---
+
 ## Citation
 
-If you find our work useful, please consider citing:
+If you use this work, please cite the original paper:
 
 ```
 @inproceedings{ying2025chord,
@@ -171,4 +235,28 @@ If you find our work useful, please consider citing:
 }
 ```
 
-© [2025] Ubisoft Entertainment. All Rights Reserved.
+---
+
+## Credits
+
+- **Ubisoft LaForge** - Original ComfyUI-Chord implementation
+- **RETHINK Studios** - Desktop Edition compatibility fixes and enhancements
+
+---
+
+## Support
+
+If you encounter any issues:
+
+1. Check the [Troubleshooting](#troubleshooting) section above
+2. Review [COMFYUI_DESKTOP_SETUP.md](COMFYUI_DESKTOP_SETUP.md)
+3. Check ComfyUI Desktop logs for `[ComfyUI-Chord]` messages
+4. Open an issue on GitHub with:
+   - ComfyUI Desktop version
+   - Error messages from logs
+   - Steps to reproduce
+
+---
+
+© [2025] Ubisoft Entertainment. All Rights Reserved.  
+Desktop Edition modifications © [2025] RETHINK Studios.
